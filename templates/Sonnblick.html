@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+   <div class="Sonnblick">
+</head>
+<body>
+<H3>Sonnblick</H3>
+     <title>Document</title>
+    {{ js_resources|indent(4)|safe }}
+    {{ css_resources|indent(4)|safe }}
+    {{ plot_script|indent(4)|safe }}
+
+    <div style="display: flex; justify-content: center;">
+        {{ plot_div|indent(4)|safe }}
+    </div>
+
+   </div>
+ {% endblock %}
+
