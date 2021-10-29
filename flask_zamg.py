@@ -60,15 +60,12 @@ filename = 'https://forms.hub.zamg.ac.at/v1/station/e1d81743-60f2-4fa2-be63-3fdc
 dat_df = read_files(filename)
 
 dat_df['WY'] = dat_df.apply(lambda x: assign_wy(x), axis=1)
-
 dat_df.set_index('time', inplace=True)
-
 dat_df['WY_s'] = pd.to_datetime((dat_df['WY']-1).astype(str)+'10'+'01')
 dat_df['WY_doy'] = (dat_df.index - dat_df['WY_s']).dt.days
 
 # make df of normals for snow height
 snow = pd.DataFrame(columns=['mean', 'med', 'max', 'min'])
-
 norm_mean = dat_df.groupby([dat_df.WY_doy]).mean()
 snow['mean'] = norm_mean['schnee']
 norm_max = dat_df.groupby([dat_df.WY_doy]).max()
@@ -89,18 +86,18 @@ def makePlot():
     source = ColumnDataSource(data=snow)
 
     p = figure(plot_height=500, plot_width=800,
-               x_axis_type="datetime", title='Sonnblick Testplot ('+str(dat_df.index[0].year)+'-'+str(dat_df.index[-1].year)+')',
+               x_axis_type="datetime", title='Sonnblick typical snow depth (time series:'+str(dat_df.index[0].year)+'-'+str(dat_df.index[-1].year)+')',
                x_axis_location="below",
                background_fill_color="#efefef", x_range=(dates[0], dates[-1]))
                # formatter=DatetimeTickFormatter(days=['%b %d']))
     # tools="xpan", toolbar_location=None
     p.line('dates', 'schnee', source=source, legend_label='current', line_color='tomato')
-    p.line('dates', 'mean', source=source, legend_label='ts mean', line_color='black')
+    p.line('dates', 'mean', source=source, legend_label='time series mean', line_color='black')
     p.line('dates', 'med', source=source, legend_label='ts median', line_color='grey')
     p.line('dates', 'max', source=source, legend_label='ts max', line_color='blue')
     p.line('dates', 'min', source=source, legend_label='ts min', line_color='green')
 
-    p.yaxis.axis_label = 'cm'
+    p.yaxis.axis_label = 'snow depth (cm)'
     p.legend.location = "top_left"
     p.legend.click_policy = "hide"
     p.xaxis.formatter = DatetimeTickFormatter(months = ['%b'])
@@ -129,7 +126,7 @@ def secondPlot():
     #print(dat_df)
     source = ColumnDataSource(data=dat_df)
     p1 = figure(plot_height=300, plot_width=800,
-                title="Sonnblick Tageswerte",
+                title="Sonnblick daily air temp and snow depth",
                x_axis_type="datetime", x_axis_location="above",
                background_fill_color="#efefef", x_range=(dat_df['dates'].values[-200], dat_df['dates'].values[-1]))
     # tools="xpan", toolbar_location=None
@@ -138,12 +135,12 @@ def secondPlot():
     p1.y_range = Range1d(
         dat_df.t.min() - 2, dat_df.t.max() + 2)
 
-    p1.yaxis.axis_label = 'Celsius'
+    p1.yaxis.axis_label = 'air temp (celsius)'
     p1.legend.location = "bottom_left"
     p1.legend.click_policy = "hide"
 
     p1.extra_y_ranges = {"schnee": Range1d(start=0, end=600)}
-    p1.add_layout(LinearAxis(y_range_name="schnee", axis_label='cm'), 'right')
+    p1.add_layout(LinearAxis(y_range_name="schnee", axis_label='snow depth (cm)'), 'right')
     p1.line('dates', 'schnee', source=source, legend_label = 'schnee', line_color="blue" , y_range_name="schnee")
 
 
