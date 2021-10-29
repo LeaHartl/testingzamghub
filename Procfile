@@ -1,1 +1,1 @@
-web: gunicorn jamtal:app
+web: gunicorn flask_zamg:app
